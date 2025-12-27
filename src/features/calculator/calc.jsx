@@ -46,6 +46,7 @@ const KenyanTaxCalculator = () => {
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [statsVisible, setStatsVisible] = useState(false);
 
   const printRef = useRef(null);
   const mainContainerRef = useRef(null);
@@ -763,6 +764,13 @@ const KenyanTaxCalculator = () => {
 
   const hasInput = grossSalary !== "";
 
+  useEffect(() => {
+    if (hasInput) {
+      setStatsVisible(false);
+      setTimeout(() => setStatsVisible(true), 50);
+    }
+  }, [hasInput, results.gross]);
+
   const darkModeClasses = isDarkMode
     ? "dark bg-slate-950"
     : "bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900";
@@ -1055,7 +1063,7 @@ const KenyanTaxCalculator = () => {
                       placeholder="0.00"
                       value={grossSalary}
                       onChange={(e) => setGrossSalary(e.target.value)}
-                      className={`pl-14 h-11 ${inputDarkClasses} focus:border-blue-500 focus:ring-2 focus:ring-blue-200 text-base font-semibold`}
+                      className={`pl-14 h-11 ${inputDarkClasses} focus:border-blue-500 focus:ring-2 focus:ring-blue-200 text-base font-semibold transition-all duration-300 hover:shadow-lg hover:scale-[1.02]`}
                     />
                   </div>
                 </div>
@@ -1082,7 +1090,7 @@ const KenyanTaxCalculator = () => {
                         placeholder="0"
                         value={nonCashBenefits}
                         onChange={(e) => setNonCashBenefits(e.target.value)}
-                        className={`pl-10 h-10 text-sm ${inputDarkClasses}`}
+                        className={`pl-10 h-10 text-sm ${inputDarkClasses} transition-all duration-300 hover:shadow-lg hover:scale-[1.02]`}
                       />
                     </div>
                   </div>
@@ -1108,7 +1116,7 @@ const KenyanTaxCalculator = () => {
                         placeholder="0"
                         value={pensionContribution}
                         onChange={(e) => setPensionContribution(e.target.value)}
-                        className={`pl-10 h-10 text-sm ${inputDarkClasses}`}
+                        className={`pl-10 h-10 text-sm ${inputDarkClasses} transition-all duration-300 hover:shadow-lg hover:scale-[1.02]`}
                       />
                     </div>
                   </div>
@@ -1135,7 +1143,7 @@ const KenyanTaxCalculator = () => {
                       placeholder="0"
                       value={otherDeductions}
                       onChange={(e) => setOtherDeductions(e.target.value)}
-                      className={`pl-10 h-10 text-sm ${inputDarkClasses}`}
+                      className={`pl-10 h-10 text-sm ${inputDarkClasses} transition-all duration-300 hover:shadow-lg hover:scale-[1.02]`}
                     />
                   </div>
                 </div>
@@ -1307,7 +1315,12 @@ const KenyanTaxCalculator = () => {
                         isDarkMode
                           ? "bg-blue-900/30 border-blue-800"
                           : "bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200"
+                      } transition-all duration-500 ${
+                        statsVisible
+                          ? "opacity-100 translate-y-0"
+                          : "opacity-0 translate-y-4"
                       }`}
+                      style={{ transitionDelay: "0ms" }}
                     >
                       <div
                         className={`text-xs font-semibold mb-1 ${
@@ -1329,7 +1342,12 @@ const KenyanTaxCalculator = () => {
                         isDarkMode
                           ? "bg-red-900/30 border-red-800"
                           : "bg-gradient-to-br from-red-50 to-red-100 border-red-200"
+                      } transition-all duration-500 ${
+                        statsVisible
+                          ? "opacity-100 translate-y-0"
+                          : "opacity-0 translate-y-4"
                       }`}
+                      style={{ transitionDelay: "100ms" }}
                     >
                       <div
                         className={`text-xs font-semibold mb-1 ${
@@ -1351,7 +1369,12 @@ const KenyanTaxCalculator = () => {
                         isDarkMode
                           ? "bg-green-900/30 border-green-800"
                           : "bg-gradient-to-br from-green-50 to-emerald-100 border-green-200"
+                      } transition-all duration-500 ${
+                        statsVisible
+                          ? "opacity-100 translate-y-0"
+                          : "opacity-0 translate-y-4"
                       }`}
+                      style={{ transitionDelay: "200ms" }}
                     >
                       <div
                         className={`text-xs font-semibold mb-1 ${
@@ -1571,17 +1594,17 @@ const KenyanTaxCalculator = () => {
                       isDarkMode
                         ? "from-green-900 via-emerald-900 to-teal-900"
                         : "from-green-500 via-emerald-500 to-teal-600"
-                    } p-5 rounded-2xl shadow-xl relative overflow-hidden`}
+                    } p-5 rounded-2xl shadow-xl relative overflow-hidden animate-pulse-slow`}
                   >
                     <div
                       className={`absolute top-0 right-0 w-32 h-32 ${
                         isDarkMode ? "bg-white/5" : "bg-white/10"
-                      } rounded-full -mr-16 -mt-16`}
+                      } rounded-full -mr-16 -mt-16 animate-float-1`}
                     ></div>
                     <div
                       className={`absolute bottom-0 left-0 w-24 h-24 ${
                         isDarkMode ? "bg-white/5" : "bg-white/10"
-                      } rounded-full -ml-12 -mb-12`}
+                      } rounded-full -ml-12 -mb-12 animate-float-2`}
                     ></div>
                     <div className="relative">
                       <div className="flex justify-between items-start mb-2">
@@ -1676,5 +1699,40 @@ const KenyanTaxCalculator = () => {
     </div>
   );
 };
+
+<style jsx>{`
+  @keyframes float {
+    0%,
+    100% {
+      transform: translate(0, 0) rotate(0deg);
+    }
+    33% {
+      transform: translate(10px, -10px) rotate(120deg);
+    }
+    66% {
+      transform: translate(-5px, 5px) rotate(240deg);
+    }
+  }
+
+  .animate-float-1 {
+    animation: float 8s ease-in-out infinite;
+  }
+
+  .animate-float-2 {
+    animation: float 10s ease-in-out infinite reverse;
+  }
+  @keyframes pulse-slow {
+    0%,
+    100% {
+      box-shadow: 0 10px 40px rgba(16, 185, 129, 0.3);
+    }
+    50% {
+      box-shadow: 0 15px 60px rgba(16, 185, 129, 0.5);
+    }
+  }
+  .animate-pulse-slow {
+    animation: pulse-slow 3s ease-in-out infinite;
+  }
+`}</style>;
 
 export default KenyanTaxCalculator;

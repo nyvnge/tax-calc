@@ -9,6 +9,9 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap'); */
+
+
 @theme inline {
   --font-sans: 'Satoshi', sans-serif;
   --radius-sm: calc(var(--radius) - 4px);
@@ -137,4 +140,61 @@
 .scrollbar-hide {
   -ms-overflow-style: none;  /* IE and Edge */
   scrollbar-width: none;  /* Firefox */
+}
+
+
+@layer utilities {
+  .border-gradient {
+    position: relative;
+    background: var(--bg-color, theme('colors.white'));
+    border-radius: var(--radius, 0.75rem);
+  }
+  
+  .border-gradient::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius, 0.75rem);
+    padding: 1.5px;
+    background: linear-gradient(135deg, 
+      var(--gradient-start, #3b82f6), 
+      var(--gradient-mid, #8b5cf6), 
+      var(--gradient-end, #ec4899));
+    -webkit-mask: 
+      linear-gradient(#fff 0 0) content-box, 
+      linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+
+  .border-gradient-sm::before {
+    padding: 1px;
+  }
+
+  .border-gradient-lg::before {
+    padding: 2px;
+  }
+
+  /* Sharp corner variations */
+  .border-gradient-sharp-top::before {
+    border-radius: 0.75rem 0.75rem 0.5rem 0.5rem;
+  }
+
+  .border-gradient-sharp-bottom::before {
+    border-radius: 0.5rem 0.5rem 0.75rem 0.75rem;
+  }
+
+  .border-gradient-sharp-left::before {
+    border-radius: 0.75rem 0.5rem 0.5rem 0.75rem;
+  }
+
+  .border-gradient-sharp-right::before {
+    border-radius: 0.5rem 0.75rem 0.75rem 0.5rem;
+  }
+
+  /* Glowing border effect */
+  .border-glow {
+    box-shadow: 0 0 20px var(--glow-color, rgba(59, 130, 246, 0.3));
+  }
 }
