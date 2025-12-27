@@ -991,34 +991,51 @@ const KenyanTaxCalculator = () => {
           isFullScreen ? "max-w-7xl mx-auto py-8" : "max-w-7xl"
         }`}
       >
-        <div className="text-center mb-6">
-          <div className="flex items-center justify-center gap-2 mb-2">
-            <div
-              className={`w-8 h-8 ${
-                isDarkMode ? "bg-blue-700" : "bg-blue-600"
-              } rounded-lg flex items-center justify-center`}
-            >
-              <Calculator className="w-4 h-4 text-white" />
-            </div>
-            <h1
-              className={`text-xl font-bold ${
-                isDarkMode ? "text-white" : "text-white"
-              }`}
-            >
-              Net Pay Calculator
-            </h1>
-          </div>
-          <p
-            className={`text-sm ${
-              isDarkMode ? "text-slate-400" : "text-slate-300"
-            }`}
-          >
-            Calculate your monthly take-home pay after taxes and deductions
-          </p>
+        <header
+          className={`w-full ${
+            isDarkMode
+              ? "bg-gradient-to-r from-slate-900 via-blue-900 to-indigo-900"
+              : "bg-gradient-to-r from-blue-900 via-indigo-900 to-blue-800"
+          } rounded-xl`}
+        >
+          {" "}
+          <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+            <div className="flex items-center gap-8">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center">
+                  <Calculator className="w-6 h-6 text-white" />
+                </div>
+                <span className="text-slate-600 text-2xl font-light">|</span>
+                <div className="text-white font-bold text-xl">
+                  Tax Calculator
+                </div>
+              </div>
+
+              <div className="hidden lg:flex items-center gap-6 text-sm text-slate-300">
+                {/* <div className="flex items-center gap-2">
+          <span>📧</span>
+          <span>info@ketaxcalc.com</span>
         </div>
+        <div className="flex items-center gap-2">
+          <span>📍</span>
+          <span>Nairobi, Kenya</span>
+        </div> */}
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3">
+              {/* <a href="#" className="w-8 h-8 bg-slate-800 hover:bg-slate-700 rounded-full flex items-center justify-center text-white text-sm transition-colors">
+        f
+      </a>
+      <a href="#" className="w-8 h-8 bg-slate-800 hover:bg-slate-700 rounded-full flex items-center justify-center text-white text-sm transition-colors">
+        in
+      </a> */}
+            </div>
+          </div>
+        </header>
 
         <Card
-          className={`shadow-2xl ${cardDarkClasses} overflow-hidden backdrop-blur-xl`}
+          className={`shadow-2xl ${cardDarkClasses} overflow-hidden backdrop-blur-xl border-2 mt-4`}
         >
           <div className="grid lg:grid-cols-12 gap-0">
             <div className={`lg:col-span-5 p-6 border-r ${sectionDarkClasses}`}>
@@ -1279,16 +1296,16 @@ const KenyanTaxCalculator = () => {
               {!hasInput ? (
                 <div className="h-full flex flex-col items-center justify-center text-center py-12">
                   <div
-                    className={`w-20 h-20 rounded-3xl flex items-center justify-center mb-4 ${
+                    className={`rounded-3xl flex items-center justify-center mb-9 ${
                       isDarkMode
                         ? "bg-gradient-to-br from-blue-900/50 to-indigo-900/50"
                         : "bg-gradient-to-br from-blue-100 to-indigo-100"
                     }`}
                   >
-                    <Calculator
-                      className={`w-10 h-10 ${
-                        isDarkMode ? "text-blue-400" : "text-blue-600"
-                      }`}
+                    <img
+                      src="/src/assets/img/calc.jpg"
+                      alt="Calculator"
+                      className="w-30 h-30 object-cover rounded-lg"
                     />
                   </div>
                   <h3
