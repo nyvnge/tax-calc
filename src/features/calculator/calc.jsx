@@ -30,7 +30,9 @@ import {
   X,
   Settings,
   Download,
+  Info,
 } from "lucide-react";
+import TaxInfoDrawer from "./TaxDrawr";
 
 const KenyanTaxCalculator = () => {
   const [grossSalary, setGrossSalary] = useState("");
@@ -47,6 +49,7 @@ const KenyanTaxCalculator = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [statsVisible, setStatsVisible] = useState(false);
+  const [showDrawer, setShowDrawer] = useState(false);
 
   const printRef = useRef(null);
   const mainContainerRef = useRef(null);
@@ -802,6 +805,18 @@ const KenyanTaxCalculator = () => {
     >
       <div className="fixed top-4 right-4 z-40 flex gap-2">
         <Button
+          onClick={() => setShowDrawer(true)}
+          variant="outline"
+          size="sm"
+          className={`h-9 w-9 p-0 rounded-full backdrop-blur-sm ${
+            isDarkMode
+              ? "bg-slate-800/80 border-slate-700 text-slate-300 hover:bg-slate-700"
+              : "bg-white/80 border-slate-300 text-slate-700 hover:bg-white"
+          }`}
+        >
+          <Info className="h-4 w-4" />
+        </Button>
+        <Button
           onClick={() => setShowSettings(!showSettings)}
           variant="outline"
           size="sm"
@@ -1011,16 +1026,7 @@ const KenyanTaxCalculator = () => {
                 </div>
               </div>
 
-              <div className="hidden lg:flex items-center gap-6 text-sm text-slate-300">
-                {/* <div className="flex items-center gap-2">
-          <span>📧</span>
-          <span>info@ketaxcalc.com</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <span>📍</span>
-          <span>Nairobi, Kenya</span>
-        </div> */}
-              </div>
+              <div className="hidden lg:flex items-center gap-6 text-sm text-slate-300"></div>
             </div>
 
             <div className="flex items-center gap-3">
@@ -1712,6 +1718,11 @@ const KenyanTaxCalculator = () => {
         </div>
 
         <div ref={printRef} style={{ display: "none" }}></div>
+        <TaxInfoDrawer
+          isOpen={showDrawer}
+          onClose={() => setShowDrawer(false)}
+          isDarkMode={isDarkMode}
+        />
       </div>
     </div>
   );
