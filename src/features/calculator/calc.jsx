@@ -1309,7 +1309,7 @@ const KenyanTaxCalculator = () => {
                     }`}
                   >
                     <img
-                      src="/src/assets/img/calc.jpg"
+                      src="/src/assets/img/calc.svg"
                       alt="Calculator"
                       className="w-30 h-30 object-cover rounded-lg"
                     />
