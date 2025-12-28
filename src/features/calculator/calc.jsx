@@ -1723,6 +1723,15 @@ const KenyanTaxCalculator = () => {
           onClose={() => setShowDrawer(false)}
           isDarkMode={isDarkMode}
         />
+        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-3 bg-gradient-to-r from-orange-500 to-amber-500 text-white px-5 py-3 rounded-full shadow-2xl backdrop-blur-sm border-2 border-orange-300/50 animate-pulse">
+          <Settings
+            className="w-5 h-5 animate-spin"
+            style={{ animationDuration: "3s" }}
+          />
+          <span className="font-bold text-sm tracking-wide">
+            Development in Progress
+          </span>
+        </div>
       </div>
     </div>
   );
