@@ -166,7 +166,8 @@ const KenyanTaxCalculator = () => {
       }
     }
 
-    const shifContribution = gross * 0.0275;
+    let shifContribution = gross * 0.0275;
+    shifContribution = Math.max(shifContribution, 300); 
     let housingLevy = deductHousingLevy ? gross * 0.015 : 0;
 
     let ownerOccupierInterest = 0;
@@ -679,7 +680,7 @@ const KenyanTaxCalculator = () => {
                 <div class="deduction-card shif">
                   <div class="card-label">SHIF Contribution</div>
                   <div class="card-value">-${formatCurrency(results.shif)}</div>
-                  <div class="card-description">2.75% of gross salary</div>
+                  <div class="card-description">2.75% of gross (min KES 300)</div>
                 </div>
                 
                 ${
@@ -1535,12 +1536,12 @@ const KenyanTaxCalculator = () => {
                         >
                           -{formatCurrency(results.shif)}
                         </div>
-                        <div
-                          className={`text-xs mt-0.5 ${
+                       <div
+                        className={`text-xs mt-0.5 ${
                             isDarkMode ? "text-blue-400/80" : "text-blue-600"
-                          }`}
+                        }`}
                         >
-                          2.75% of gross
+                        2.75% (min KES 300)
                         </div>
                       </div>
                       {deductTierIINSSF && (
