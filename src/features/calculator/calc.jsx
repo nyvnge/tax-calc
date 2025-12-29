@@ -50,6 +50,8 @@ const KenyanTaxCalculator = () => {
   const [showSettings, setShowSettings] = useState(false);
   const [statsVisible, setStatsVisible] = useState(false);
   const [showDrawer, setShowDrawer] = useState(false);
+  const [housingValue, setHousingValue] = useState("");
+  const [rentChargedToEmployee, setRentChargedToEmployee] = useState("");
 
   const printRef = useRef(null);
   const mainContainerRef = useRef(null);
@@ -167,13 +169,27 @@ const KenyanTaxCalculator = () => {
     }
 
     let shifContribution = gross * 0.0275;
-    shifContribution = Math.max(shifContribution, 300); 
+    shifContribution = Math.max(shifContribution, 300);
     let housingLevy = deductHousingLevy ? gross * 0.015 : 0;
 
-    let ownerOccupierInterest = 0;
+    let housingBenefit = 0;
     if (isHousedByEmployer) {
-      const percentage = housingType === "farm" ? 0.1 : 0.15;
-      ownerOccupierInterest = Math.min(gross * percentage, 30000);
+      const housingValueAmount = parseFloat(housingValue) || 0;
+      const rentCharged = parseFloat(rentChargedToEmployee) || 0;
+
+      if (housingType === "farm") {
+        housingBenefit = Math.max(0, gross * 0.1 - rentCharged);
+      } else if (housingType === "ordinary") {
+        housingBenefit = Math.max(0, gross * 0.15 - rentCharged);
+      } else if (housingType === "director") {
+        const fifteenPercentValue = gross * 0.15;
+        housingBenefit =
+          Math.max(fifteenPercentValue, housingValueAmount) - rentCharged;
+      } else if (housingType === "actualRent") {
+        housingBenefit = Math.max(0, housingValueAmount - rentCharged);
+      }
+
+      housingBenefit = Math.max(0, housingBenefit);
     }
 
     const totalDeductibles =
@@ -181,7 +197,7 @@ const KenyanTaxCalculator = () => {
       shifContribution +
       housingLevy +
       pensionAmount +
-      ownerOccupierInterest +
+      housingBenefit +
       otherDeductionsAmount;
 
     const taxableIncome = Math.max(
@@ -216,7 +232,6 @@ const KenyanTaxCalculator = () => {
       taxableBenefits,
       pensionContribution: pensionAmount,
       otherDeductions: otherDeductionsAmount,
-      ownerOccupierInterest,
       taxableIncome,
       paye,
       shif: shifContribution,
@@ -226,6 +241,7 @@ const KenyanTaxCalculator = () => {
       totalDeductibles,
       totalDeductions,
       netSalary,
+      housingBenefit,
     };
   };
 
@@ -638,15 +654,15 @@ const KenyanTaxCalculator = () => {
                   : ""
               }
               ${
-                results.ownerOccupierInterest > 0
+                results.housingBenefit > 0
                   ? `
-                <div class="row">
-                  <span class="label">Owner Occupier Interest:</span>
-                  <span class="value" style="color: #059669;">-${formatCurrency(
-                    results.ownerOccupierInterest
-                  )}</span>
+                <div className="row">
+                    <span className="label">Housing Benefit:</span>
+                    <span className="value" style="color: #059669;">-${formatCurrency(
+                      results.housingBenefit
+                    )}</span>
                 </div>
-              `
+                `
                   : ""
               }
               <div class="row">
@@ -1254,40 +1270,134 @@ const KenyanTaxCalculator = () => {
                         htmlFor="housedByEmployer"
                         className={`${labelDarkClasses} text-xs font-medium cursor-pointer flex items-center gap-1.5`}
                       >
-                        Housed by Employer
+                        Housed by Employer (Housing Benefit)
                       </Label>
                     </div>
 
                     {isHousedByEmployer && (
-                      <div className="ml-6">
-                        <Select
-                          value={housingType}
-                          onValueChange={setHousingType}
-                        >
-                          <SelectTrigger
-                            className={`h-9 text-xs ${inputDarkClasses}`}
+                      <div className="ml-6 space-y-3">
+                        <div>
+                          <Select
+                            value={housingType}
+                            onValueChange={setHousingType}
                           >
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent
-                            className={
-                              isDarkMode ? "bg-slate-800 border-slate-700" : ""
-                            }
+                            <SelectTrigger
+                              className={`h-9 text-xs ${inputDarkClasses}`}
+                            >
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent
+                              className={
+                                isDarkMode
+                                  ? "bg-slate-800 border-slate-700"
+                                  : ""
+                              }
+                            >
+                              <SelectItem
+                                value="ordinary"
+                                className={
+                                  isDarkMode ? "focus:bg-slate-700" : ""
+                                }
+                              >
+                                Ordinary Employee (15% rule)
+                              </SelectItem>
+                              <SelectItem
+                                value="farm"
+                                className={
+                                  isDarkMode ? "focus:bg-slate-700" : ""
+                                }
+                              >
+                                Agricultural Employee (10% rule)
+                              </SelectItem>
+                              <SelectItem
+                                value="director"
+                                className={
+                                  isDarkMode ? "focus:bg-slate-700" : ""
+                                }
+                              >
+                                Director (15% or fair market value)
+                              </SelectItem>
+                              <SelectItem
+                                value="actualRent"
+                                className={
+                                  isDarkMode ? "focus:bg-slate-700" : ""
+                                }
+                              >
+                                Actual Rent Paid by Employer
+                              </SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        {(housingType === "director" ||
+                          housingType === "actualRent") && (
+                          <div>
+                            <Label
+                              htmlFor="housingValue"
+                              className={`${labelDarkClasses} font-semibold text-xs mb-1.5 block`}
+                            >
+                              {housingType === "director"
+                                ? "Fair Market Rental Value"
+                                : "Actual Rent Paid by Employer"}
+                            </Label>
+                            <div className="relative">
+                              <span
+                                className={`absolute left-2 top-1/2 -translate-y-1/2 ${
+                                  isDarkMode
+                                    ? "text-slate-400"
+                                    : "text-slate-500"
+                                } text-xs`}
+                              >
+                                KES
+                              </span>
+                              <Input
+                                id="housingValue"
+                                type="number"
+                                placeholder="0"
+                                value={housingValue}
+                                onChange={(e) =>
+                                  setHousingValue(e.target.value)
+                                }
+                                className={`pl-10 h-10 text-sm ${inputDarkClasses}`}
+                              />
+                            </div>
+                          </div>
+                        )}
+
+                        <div>
+                          <Label
+                            htmlFor="rentCharged"
+                            className={`${labelDarkClasses} font-semibold text-xs mb-1.5 block`}
                           >
-                            <SelectItem
-                              value="ordinary"
-                              className={isDarkMode ? "focus:bg-slate-700" : ""}
+                            Rent Charged to Employee (if any)
+                          </Label>
+                          <div className="relative">
+                            <span
+                              className={`absolute left-2 top-1/2 -translate-y-1/2 ${
+                                isDarkMode ? "text-slate-400" : "text-slate-500"
+                              } text-xs`}
                             >
-                              Ordinary (15%)
-                            </SelectItem>
-                            <SelectItem
-                              value="farm"
-                              className={isDarkMode ? "focus:bg-slate-700" : ""}
-                            >
-                              Farm (10%)
-                            </SelectItem>
-                          </SelectContent>
-                        </Select>
+                              KES
+                            </span>
+                            <Input
+                              id="rentCharged"
+                              type="number"
+                              placeholder="0"
+                              value={rentChargedToEmployee}
+                              onChange={(e) =>
+                                setRentChargedToEmployee(e.target.value)
+                              }
+                              className={`pl-10 h-10 text-sm ${inputDarkClasses}`}
+                            />
+                          </div>
+                          <p
+                            className={`text-xs mt-1 ${
+                              isDarkMode ? "text-slate-400" : "text-slate-500"
+                            }`}
+                          >
+                            Deduct this amount from housing benefit
+                          </p>
+                        </div>
                       </div>
                     )}
                   </div>
@@ -1536,12 +1646,12 @@ const KenyanTaxCalculator = () => {
                         >
                           -{formatCurrency(results.shif)}
                         </div>
-                       <div
-                        className={`text-xs mt-0.5 ${
+                        <div
+                          className={`text-xs mt-0.5 ${
                             isDarkMode ? "text-blue-400/80" : "text-blue-600"
-                        }`}
+                          }`}
                         >
-                        2.75% (min KES 300)
+                          2.75% (min KES 300)
                         </div>
                       </div>
                       {deductTierIINSSF && (
