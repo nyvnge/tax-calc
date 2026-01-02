@@ -177,19 +177,21 @@ const KenyanTaxCalculator = () => {
       const housingValueAmount = parseFloat(housingValue) || 0;
       const rentCharged = parseFloat(rentChargedToEmployee) || 0;
 
+      const totalEmploymentIncome = gross + taxableBenefits;
+
       if (housingType === "farm") {
-        housingBenefit = Math.max(0, gross * 0.1 - rentCharged);
+        housingBenefit = Math.max(0, totalEmploymentIncome * 0.1 - rentCharged);
       } else if (housingType === "ordinary") {
-        housingBenefit = Math.max(0, gross * 0.15 - rentCharged);
+        const fifteenPercent = totalEmploymentIncome * 0.15;
+        const taxableValue = Math.max(fifteenPercent, housingValueAmount);
+        housingBenefit = Math.max(0, taxableValue - rentCharged);
       } else if (housingType === "director") {
-        const fifteenPercentValue = gross * 0.15;
-        housingBenefit =
-          Math.max(fifteenPercentValue, housingValueAmount) - rentCharged;
+        const fifteenPercent = totalEmploymentIncome * 0.15;
+        const taxableValue = Math.max(fifteenPercent, housingValueAmount);
+        housingBenefit = Math.max(0, taxableValue - rentCharged);
       } else if (housingType === "actualRent") {
         housingBenefit = Math.max(0, housingValueAmount - rentCharged);
       }
-
-      housingBenefit = Math.max(0, housingBenefit);
     }
 
     const totalDeductibles =
@@ -1299,7 +1301,7 @@ const KenyanTaxCalculator = () => {
                                   isDarkMode ? "focus:bg-slate-700" : ""
                                 }
                               >
-                                Ordinary Employee (15% rule)
+                                Ordinary Employee (Higher of 15% or rent)
                               </SelectItem>
                               <SelectItem
                                 value="farm"
@@ -1315,7 +1317,7 @@ const KenyanTaxCalculator = () => {
                                   isDarkMode ? "focus:bg-slate-700" : ""
                                 }
                               >
-                                Director (15% or fair market value)
+                                Director (Highest of 15%, market value, or rent)
                               </SelectItem>
                               <SelectItem
                                 value="actualRent"
@@ -1323,22 +1325,25 @@ const KenyanTaxCalculator = () => {
                                   isDarkMode ? "focus:bg-slate-700" : ""
                                 }
                               >
-                                Actual Rent Paid by Employer
+                                Employer Owns Property (Fair market value)
                               </SelectItem>
                             </SelectContent>
                           </Select>
                         </div>
 
                         {(housingType === "director" ||
-                          housingType === "actualRent") && (
+                          housingType === "actualRent" ||
+                          housingType === "ordinary") && (
                           <div>
                             <Label
                               htmlFor="housingValue"
                               className={`${labelDarkClasses} font-semibold text-xs mb-1.5 block`}
                             >
                               {housingType === "director"
+                                ? "Fair Market Rental Value or Actual Rent"
+                                : housingType === "actualRent"
                                 ? "Fair Market Rental Value"
-                                : "Actual Rent Paid by Employer"}
+                                : "Actual Rent Paid by Employer (if applicable)"}
                             </Label>
                             <div className="relative">
                               <span
@@ -1361,6 +1366,17 @@ const KenyanTaxCalculator = () => {
                                 className={`pl-10 h-10 text-sm ${inputDarkClasses}`}
                               />
                             </div>
+                            {housingType === "ordinary" && (
+                              <p
+                                className={`text-xs mt-1 ${
+                                  isDarkMode
+                                    ? "text-slate-400"
+                                    : "text-slate-500"
+                                }`}
+                              >
+                                Will compare with 15% of income (higher applies)
+                              </p>
+                            )}
                           </div>
                         )}
 
